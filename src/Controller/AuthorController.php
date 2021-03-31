@@ -9,20 +9,42 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * @Route("/author")
  */
 class AuthorController extends AbstractController
 {
+    private $cacheApp;
+
     /**
      * @Route("/", name="author_index", methods={"GET"})
+     * @Cache(smaxage="20", maxage="20", expires="+2 days", public=true)
      */
-    public function index(AuthorRepository $authorRepository): Response
+    public function index(Request $request, AuthorRepository $authorRepository, TagAwareCacheInterface $cacheApp): Response
     {
-        return $this->render('author/index.html.twig', [
+        $this->cacheApp = $cacheApp;
+
+        $etag = $request->getETags();
+        dump($etag);
+        dump($request->headers->all());
+        dump($request->server->all());
+        dump($request->headers);
+//        $cacheApp->get()
+        $authors = $authorRepository->findAll();
+
+        $response =  $this->render('author/index.html.twig', [
             'authors' => $authorRepository->findAll(),
         ]);
+
+        $response->setEtag(hash('md5',   serialize($authors)));
+        $response->setMaxAge(3600);
+        $response->setPublic(true);
+
+
+        return $response;
     }
 
     /**

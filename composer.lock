@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f149da7118744b916e73f0fe676aef8b",
+    "content-hash": "c00cc1581a3c104c3d683797a5cc0bd2",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -2832,16 +2832,16 @@
         },
         {
             "name": "sensio/framework-extra-bundle",
-            "version": "v5.6.1",
+            "version": "v6.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioFrameworkExtraBundle.git",
-                "reference": "430d14c01836b77c28092883d195a43ce413ee32"
+                "reference": "8ef75e99f20332f2725587896364f7079b53de95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/430d14c01836b77c28092883d195a43ce413ee32",
-                "reference": "430d14c01836b77c28092883d195a43ce413ee32",
+                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/8ef75e99f20332f2725587896364f7079b53de95",
+                "reference": "8ef75e99f20332f2725587896364f7079b53de95",
                 "shasum": ""
             },
             "require": {
@@ -2860,7 +2860,6 @@
                 "doctrine/dbal": "^2.10|^3.0",
                 "doctrine/doctrine-bundle": "^1.11|^2.0",
                 "doctrine/orm": "^2.5",
-                "nyholm/psr7": "^1.1",
                 "symfony/browser-kit": "^4.4|^5.0",
                 "symfony/doctrine-bridge": "^4.4|^5.0",
                 "symfony/dom-crawler": "^4.4|^5.0",
@@ -2869,7 +2868,6 @@
                 "symfony/monolog-bridge": "^4.0|^5.0",
                 "symfony/monolog-bundle": "^3.2",
                 "symfony/phpunit-bridge": "^4.4.9|^5.0.9",
-                "symfony/psr-http-message-bridge": "^1.1",
                 "symfony/security-bundle": "^4.4|^5.0",
                 "symfony/twig-bundle": "^4.4|^5.0",
                 "symfony/yaml": "^4.4|^5.0",
@@ -2878,7 +2876,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.6.x-dev"
+                    "dev-master": "6.1.x-dev"
                 }
             },
             "autoload": {
@@ -2904,11 +2902,7 @@
                 "annotations",
                 "controllers"
             ],
-            "support": {
-                "issues": "https://github.com/sensiolabs/SensioFrameworkExtraBundle/issues",
-                "source": "https://github.com/sensiolabs/SensioFrameworkExtraBundle/tree/v5.6.1"
-            },
-            "time": "2020-08-25T19:10:18+00:00"
+            "time": "2021-02-23T11:50:58+00:00"
         },
         {
             "name": "symfony/apache-pack",
@@ -7108,12 +7102,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-turbo.git",
-                "reference": "b0922ecb0975c746f81fe4725d9e5de704d7bf33"
+                "reference": "7269a25c0d0aae6f17af75c862a1398e03a7b793"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-turbo/zipball/b0922ecb0975c746f81fe4725d9e5de704d7bf33",
-                "reference": "b0922ecb0975c746f81fe4725d9e5de704d7bf33",
+                "url": "https://api.github.com/repos/symfony/ux-turbo/zipball/7269a25c0d0aae6f17af75c862a1398e03a7b793",
+                "reference": "7269a25c0d0aae6f17af75c862a1398e03a7b793",
                 "shasum": ""
             },
             "require": {
@@ -7121,6 +7115,7 @@
                 "symfony/webpack-encore-bundle": "^1.11"
             },
             "require-dev": {
+                "doctrine/annotations": "^1.12",
                 "doctrine/doctrine-bundle": "^2.2",
                 "doctrine/orm": "^2.8",
                 "phpstan/phpstan": "^0.12",
@@ -7193,7 +7188,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-31T08:53:59+00:00"
+            "time": "2021-03-31T13:36:52+00:00"
         },
         {
             "name": "symfony/validator",
