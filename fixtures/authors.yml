@@ -1,3 +1,12 @@
 App\Entity\Author:
-  author_{1..300}:
+  author_{1..2000}:
     name (unique): <name()>
+
+App\Entity\Book:
+  book_{1..2000}:
+    title (unique): <bs()>
+    author (unique): <name()>
+    isbn (unique): <isbn13()>
+    summary (unique): <realtext(300, 4)>
+    price : <numberBetween(33, 40000)>
+    author:  '@author_*'

@@ -5,11 +5,17 @@ namespace App\Controller;
 use App\Entity\Author;
 use App\Form\AuthorType;
 use App\Repository\AuthorRepository;
+use App\Service\AuthorManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
@@ -21,28 +27,34 @@ class AuthorController extends AbstractController
 
     /**
      * @Route("/", name="author_index", methods={"GET"})
-     * @Cache(smaxage="20", maxage="20", expires="+2 days", public=true)
+     * @Cache(smaxage="300", maxage="300", expires="+2 days", public=true)
      */
-    public function index(Request $request, AuthorRepository $authorRepository, TagAwareCacheInterface $cacheApp): Response
+    public function index(Request $request, AuthorManager $authorManager, AuthorRepository $authorRepository, AdapterInterface $cacheApp): Response
     {
-        $this->cacheApp = $cacheApp;
+        /** @var Author[] $authors */
+        $authors = null;
+        $etag = $request->cookies->get('xx-etag', 'NOT FOUND');
+        $version = null;
 
-        $etag = $request->getETags();
-        dump($etag);
-        dump($request->headers->all());
-        dump($request->server->all());
-        dump($request->headers);
-//        $cacheApp->get()
-        $authors = $authorRepository->findAll();
+        $cachedAuthorsIndex = $cacheApp->getItem('authors_index');
+        if ($cachedAuthorsIndex->isHit()) {
+            $authors = $cachedAuthorsIndex->get();
+        } else {
+            $authors = $authorRepository->findAuthorsAndBooks();
+            $cachedAuthorsIndex->set($authors);
+            $cachedAuthorsIndex->expiresAfter(60);
+//            $cacheApp->save($cachedAuthorsIndex);
+        }
 
-        $response =  $this->render('author/index.html.twig', [
-            'authors' => $authorRepository->findAll(),
+        $version = $authorManager->getEtag($authors);
+
+        $response = $this->render('author/index.html.twig', [
+            'authors' => $authors,
         ]);
 
-        $response->setEtag(hash('md5',   serialize($authors)));
-        $response->setMaxAge(3600);
-        $response->setPublic(true);
-
+        $response->setEtag($version);
+        $response->headers->setCookie(new Cookie('xx-etag', $version));
+//        $response->headers->set('xx-is-hit', $cachedAuthorsIndex->isHit() ? 'true' : 'false');
 
         return $response;
     }
@@ -105,7 +117,7 @@ class AuthorController extends AbstractController
      */
     public function delete(Request $request, Author $author): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$author->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $author->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($author);
             $entityManager->flush();
