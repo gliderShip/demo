@@ -26,3 +26,4 @@ yarn-error.log
 .idea/
 .php-version
 package-lock.json
+data/database.sqlite
