@@ -121,8 +121,8 @@ class FacebookImportCommand extends Command
 
         $user->setMobile($userRecord['mobile']);
         $user->setFacebookId($userRecord['facebookId']);
-        $user->setFirstName(trim($userRecord['firstName'], " \t\n\r\0\x0B\'"));
-        $user->setLastName(trim($userRecord['lastName']), " \t\n\r\0\x0B\'");
+        $user->setFirstName(trim($userRecord['firstName'], " \t\n\r\0\x0B\'-)("));
+        $user->setLastName(trim($userRecord['lastName']), " \t\n\r\0\x0B\'-)(");
         $user->setSex($this->getSex($userRecord['sex']) );
 
         $currentAddress = $this->getAddress($userRecord['currentAddress']);
