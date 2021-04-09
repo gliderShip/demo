@@ -96,7 +96,7 @@ class FacebookImportCommand extends Command
 
             $faceBookUser = $this->importUser($record);
             $this->em->persist($faceBookUser);
-            if( ++$i % 100 == 0) {
+            if( ++$i % 1000 == 0) {
                 echo $i.PHP_EOL;
                 $this->em->flush();
                 gc_collect_cycles();
