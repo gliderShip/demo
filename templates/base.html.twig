@@ -108,27 +108,31 @@ See https://symfony.com/doc/current/templates.html#template-inheritance-and-layo
     </header>
 {% endblock %}
 
-<div class="container body-container">
-    {% block body %}
-        <div class="row">
-            <div id="main" class="col-sm-9">
-                {{ include('default/_flash_messages.html.twig') }}
+{% block body_container %}
 
-                {% block main %}{% endblock %}
+    <div class="container body-container">
+        {% block body %}
+            <div class="row">
+                <div id="main" class="col-sm-9">
+                    {{ include('default/_flash_messages.html.twig') }}
+
+                    {% block main %}{% endblock %}
+                </div>
+
+                {# <div id="sidebar" class="col-sm-3"> #}
+                {# {% block sidebar %} #}
+                {# {{ render_esi(controller('Symfony\\Bundle\\FrameworkBundle\\Controller\\TemplateController::templateAction', { #}
+                {# 'template': 'blog/about.html.twig', #}
+                {# 'sharedAge': 600, #}
+                {# '_locale': app.request.locale #}
+                {# })) }} #}
+                {# {% endblock %} #}
+                {# </div> #}
             </div>
+        {% endblock %}
+    </div>
 
-{#            <div id="sidebar" class="col-sm-3">#}
-{#                {% block sidebar %}#}
-{#                    {{ render_esi(controller('Symfony\\Bundle\\FrameworkBundle\\Controller\\TemplateController::templateAction', {#}
-{#                        'template': 'blog/about.html.twig',#}
-{#                        'sharedAge': 600,#}
-{#                        '_locale': app.request.locale#}
-{#                    })) }}#}
-{#                {% endblock %}#}
-{#            </div>#}
-        </div>
-    {% endblock %}
-</div>
+{% endblock body_container %}
 
 {% block footer %}
     <footer>

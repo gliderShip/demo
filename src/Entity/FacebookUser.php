@@ -6,7 +6,13 @@ use App\Repository\FacebookUserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=FaceBookUsersRepository::class)
+ * @ORM\Entity(repositoryClass=FacebookUserRepository::class)
+ * @ORM\Table(
+ *     indexes={
+ *     @ORM\Index(name="soundex", columns={"soundex", "rev_soundex"}, flags={"fulltext"}),
+ *     @ORM\Index(name="work_company", columns={"work_company", "rev_work"}, flags={"fulltext"})
+ * }
+ *     )
  */
 class FacebookUser
 {
@@ -35,12 +41,12 @@ class FacebookUser
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $firstName;
+    public $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $lastName;
+    public $lastName;
 
     /**
      * @ORM\Column(type="string", length=1)
@@ -116,6 +122,21 @@ class FacebookUser
      * @ORM\Column(type="string", length=63, nullable=true)
      */
     private $facebookBirthDate;
+
+    /**
+     * @ORM\Column(type="string", length=127, nullable=true)
+     */
+    private $revWork;
+
+    /**
+     * @ORM\Column(type="string", length=63, nullable=true)
+     */
+    private $soundex;
+
+    /**
+     * @ORM\Column(type="string", length=63, nullable=true)
+     */
+    private $revSoundex;
 
     public function getId(): ?int
     {
@@ -363,6 +384,42 @@ class FacebookUser
     public function setFacebookBirthDate(?string $facebookBirthDate): self
     {
         $this->facebookBirthDate = $facebookBirthDate;
+
+        return $this;
+    }
+
+    public function getRevWork(): ?string
+    {
+        return $this->revWork;
+    }
+
+    public function setRevWork(?string $revWork): self
+    {
+        $this->revWork = $revWork;
+
+        return $this;
+    }
+
+    public function getSoundex(): ?string
+    {
+        return $this->soundex;
+    }
+
+    public function setSoundex(?string $soundex): self
+    {
+        $this->soundex = $soundex;
+
+        return $this;
+    }
+
+    public function getRevSoundex(): ?string
+    {
+        return $this->revSoundex;
+    }
+
+    public function setRevSoundex(?string $revSoundex): self
+    {
+        $this->revSoundex = $revSoundex;
 
         return $this;
     }

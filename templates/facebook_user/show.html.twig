@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FacebookUser{% endblock %}
+
+{% block body %}
+    <h1>FacebookUser</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ facebook_user.id }}</td>
+            </tr>
+            <tr>
+                <th>CountryLeak</th>
+                <td>{{ facebook_user.countryLeak }}</td>
+            </tr>
+            <tr>
+                <th>Mobile</th>
+                <td>{{ facebook_user.mobile }}</td>
+            </tr>
+            <tr>
+                <th>FacebookId</th>
+                <td>{{ facebook_user.facebookId }}</td>
+            </tr>
+            <tr>
+                <th>FirstName</th>
+                <td>{{ facebook_user.firstName }}</td>
+            </tr>
+            <tr>
+                <th>LastName</th>
+                <td>{{ facebook_user.lastName }}</td>
+            </tr>
+            <tr>
+                <th>Sex</th>
+                <td>{{ facebook_user.sex }}</td>
+            </tr>
+            <tr>
+                <th>CurrentDistrict</th>
+                <td>{{ facebook_user.currentDistrict }}</td>
+            </tr>
+            <tr>
+                <th>CurrentCountry</th>
+                <td>{{ facebook_user.currentCountry }}</td>
+            </tr>
+            <tr>
+                <th>CurrentState</th>
+                <td>{{ facebook_user.currentState }}</td>
+            </tr>
+            <tr>
+                <th>HometownDistrict</th>
+                <td>{{ facebook_user.hometownDistrict }}</td>
+            </tr>
+            <tr>
+                <th>HometownCountry</th>
+                <td>{{ facebook_user.hometownCountry }}</td>
+            </tr>
+            <tr>
+                <th>HometownState</th>
+                <td>{{ facebook_user.hometownState }}</td>
+            </tr>
+            <tr>
+                <th>RelationshipStatus</th>
+                <td>{{ facebook_user.relationshipStatus }}</td>
+            </tr>
+            <tr>
+                <th>WorkCompany</th>
+                <td>{{ facebook_user.workCompany }}</td>
+            </tr>
+            <tr>
+                <th>Date10</th>
+                <td>{{ facebook_user.date10 }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ facebook_user.email }}</td>
+            </tr>
+            <tr>
+                <th>BirthDate</th>
+                <td>{{ facebook_user.birthDate ? facebook_user.birthDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>FacebookCurrentAddress</th>
+                <td>{{ facebook_user.facebookCurrentAddress }}</td>
+            </tr>
+            <tr>
+                <th>FacebookHometownAddress</th>
+                <td>{{ facebook_user.facebookHometownAddress }}</td>
+            </tr>
+            <tr>
+                <th>FacebookBirthDate</th>
+                <td>{{ facebook_user.facebookBirthDate }}</td>
+            </tr>
+            <tr>
+                <th>RevWork</th>
+                <td>{{ facebook_user.revWork }}</td>
+            </tr>
+            <tr>
+                <th>Soundex</th>
+                <td>{{ facebook_user.soundex }}</td>
+            </tr>
+            <tr>
+                <th>RevSoundex</th>
+                <td>{{ facebook_user.revSoundex }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('facebook_user_index') }}">back to list</a>
+
+    <a href="{{ path('facebook_user_edit', {'id': facebook_user.id}) }}">edit</a>
+
+    {{ include('facebook_user/_delete_form.html.twig') }}
+{% endblock %}

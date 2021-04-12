@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\FacebookUser;
+use App\Pagination\Paginator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,6 +18,15 @@ class FacebookUserRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, FacebookUser::class);
+    }
+
+    public function findByPage(int $page = 1): Paginator
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->orderBy('u.id', 'ASC')
+            ;
+
+        return (new Paginator($qb, $pageSize=100))->paginate($page);
     }
 
     // /**
