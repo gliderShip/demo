@@ -16,10 +16,14 @@
                     <th>Id</th>
                     <th>CountryLeak</th>
                     <th>Mobile</th>
-                    <th>FacebookId</th>
                     <th>FirstName</th>
                     <th>LastName</th>
                     <th>Sex</th>
+                    <th>WorkCompany</th>
+                    <th>FacebookCurrentAddress</th>
+                    <th>FacebookHometownAddress</th>
+                    <th>BirthDate</th>
+                    <th>FacebookId</th>
                     <th>CurrentDistrict</th>
                     <th>CurrentCountry</th>
                     <th>CurrentState</th>
@@ -27,12 +31,8 @@
                     <th>HometownCountry</th>
                     <th>HometownState</th>
                     <th>RelationshipStatus</th>
-                    <th>WorkCompany</th>
                     <th>Date10</th>
                     <th>Email</th>
-                    <th>BirthDate</th>
-                    <th>FacebookCurrentAddress</th>
-                    <th>FacebookHometownAddress</th>
                     <th>FacebookBirthDate</th>
                     <th>RevWork</th>
                     <th>Soundex</th>
@@ -49,10 +49,14 @@
                         <td>{{ facebook_user.id }}</td>
                         <td>{{ facebook_user.countryLeak }}</td>
                         <td>{{ facebook_user.mobile }}</td>
-                        <td>{{ facebook_user.facebookId }}</td>
                         <td>{{ facebook_user.firstName }}</td>
                         <td>{{ facebook_user.lastName }}</td>
                         <td>{{ facebook_user.sex }}</td>
+                        <td>{{ facebook_user.workCompany }}</td>
+                        <td>{{ facebook_user.facebookCurrentAddress }}</td>
+                        <td>{{ facebook_user.facebookHometownAddress }}</td>
+                        <td>{{ facebook_user.birthDate ? facebook_user.birthDate|date('Y-m-d') : '' }}</td>
+                        <td>{{ facebook_user.facebookId }}</td>
                         <td>{{ facebook_user.currentDistrict }}</td>
                         <td>{{ facebook_user.currentCountry }}</td>
                         <td>{{ facebook_user.currentState }}</td>
@@ -60,12 +64,8 @@
                         <td>{{ facebook_user.hometownCountry }}</td>
                         <td>{{ facebook_user.hometownState }}</td>
                         <td>{{ facebook_user.relationshipStatus }}</td>
-                        <td>{{ facebook_user.workCompany }}</td>
                         <td>{{ facebook_user.date10 }}</td>
                         <td>{{ facebook_user.email }}</td>
-                        <td>{{ facebook_user.birthDate ? facebook_user.birthDate|date('Y-m-d') : '' }}</td>
-                        <td>{{ facebook_user.facebookCurrentAddress }}</td>
-                        <td>{{ facebook_user.facebookHometownAddress }}</td>
                         <td>{{ facebook_user.facebookBirthDate }}</td>
                         <td>{{ facebook_user.revWork }}</td>
                         <td>{{ facebook_user.soundex }}</td>

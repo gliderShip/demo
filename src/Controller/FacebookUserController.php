@@ -41,7 +41,7 @@ class FacebookUserController extends AbstractController
                 return new Response($serializer->serialize($facebookUsersPaginator->getResults(), 'xml', []));
                 break;
             default:
-                return $this->render('facebook_user/index.' . $_format . '.twig', [
+                return $this->render('facebook_user/index.html.twig', [
                     'paginator' => $facebookUsersPaginator,
                     "log" => $log
                 ]);
