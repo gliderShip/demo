@@ -2,6 +2,12 @@
 
     {% block title %}FacebookUser index{% endblock %}
 
+{% block header_search %}
+    <a href="{{ path('facebook_user_search') }}">
+        <i class="fa fa-search"></i> {{ 'menu.search'|trans }}
+    </a>
+{% endblock header_search %}
+
 {% block body_container %}
 
     <div class="container body-container" style="margin: 1em">
@@ -43,10 +49,9 @@
                 {% for facebook_user in paginator.results %}
                     <tr>
                         <td>
-                            <a href="{{ path('facebook_user_show', {'id': facebook_user.id}) }}">show</a>
                             <a href="{{ path('facebook_user_edit', {'id': facebook_user.id}) }}">edit</a>
                         </td>
-                        <td>{{ facebook_user.id }}</td>
+                        <td><a href="{{ path('facebook_user_show', {'id': facebook_user.id}) }}">{{ facebook_user.id }}</a></td>
                         <td>{{ facebook_user.countryLeak }}</td>
                         <td>{{ facebook_user.mobile }}</td>
                         <td>{{ facebook_user.firstName }}</td>

@@ -1,0 +1,14 @@
+{% for facebook_user in users %}
+    <tr>
+        <td>{{ facebook_user.id }}</td>
+        <td>{{ facebook_user.fullName }}</td>
+        <td>{{ facebook_user.mobile }}</td>
+        <td>{{ facebook_user.sex }}</td>
+        <td>{{ facebook_user.work }}</td>
+        <td><a href="{{ facebook_user.url }}">show</a></td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="6">no records found</td>
+    </tr>
+{% endfor %}

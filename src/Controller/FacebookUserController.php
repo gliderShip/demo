@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\FacebookUser;
 use App\Form\FacebookUserType;
 use App\Repository\FacebookUserRepository;
+use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use const Grpc\STATUS_OK;
 
 /**
  * @Route("/facebook")
@@ -27,14 +29,16 @@ class FacebookUserController extends AbstractController
         dump("page: " . $page);
 
         $facebookUsersPaginator = $faceBookUserRepository->findByPage($page);
+
         $log = floor(log($facebookUsersPaginator->getLastPage(), 2) - 1);
 
         dump("users: " . $facebookUsersPaginator->getNumResults());
         dump("total pages: " . $facebookUsersPaginator->getLastPage());
         dump("log: " . $log);
 
-        switch ($_format){
+        switch ($_format) {
             case 'json':
+//                return $this->json($facebookUsersPaginator->getResults(), Response::HTTP_OK, [], ['json_encode_options' => \JSON_PRETTY_PRINT]);
                 return new Response($serializer->serialize($facebookUsersPaginator->getResults(), 'json', ['json_encode_options' => \JSON_PRETTY_PRINT]));
                 break;
             case 'xml':
@@ -73,7 +77,7 @@ class FacebookUserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="facebook_user_show", methods={"GET"})
+     * @Route("/user/{id}", name="facebook_user_show", methods={"GET"})
      */
     public function show(FacebookUser $facebookUser): Response
     {
@@ -114,5 +118,68 @@ class FacebookUserController extends AbstractController
         }
 
         return $this->redirectToRoute('facebook_user_index');
+    }
+
+    /**
+     * @Route("/search", methods="GET", name="facebook_user_search")
+     */
+    public function search(Request $request, FacebookUserRepository $facebookUserRepository): Response
+    {
+        $query = $request->query->get('q', '');
+        $limit = $request->query->get('l', 2500);
+
+        if (!$request->isXmlHttpRequest()) {
+            return $this->render('facebook_user/search.html.twig', ['query' => $query]);
+        }
+
+        $foundUsers = $facebookUserRepository->findBySearchQuery($query, $limit);
+
+        $results = [];
+        foreach ($foundUsers as $user) {
+            $results[] = [
+                'fullName' => htmlspecialchars($user->getFirstName(), \ENT_COMPAT | \ENT_HTML5) . htmlspecialchars($user->getLastName(), \ENT_COMPAT | \ENT_HTML5),
+                'mobile' => $user->getMobile(),
+                'sex' => $user->getSex(),
+                'work' => htmlspecialchars($user->getWorkCompany(), \ENT_COMPAT | \ENT_HTML5),
+                'url' => $this->generateUrl('facebook_user_show', ['id' => $user->getId()]),
+            ];
+        }
+
+        dump($results);
+
+        return $this->json($results);
+    }
+
+    /**
+     * @Route("/hsearch", methods="GET", name="hfacebook_user_search")
+     */
+    public function hsearch(Request $request, FacebookUserRepository $facebookUserRepository): Response
+    {
+        $query = $request->query->get('q', '');
+        $limit = $request->query->get('l', 2500);
+
+//        if (!$request->isXmlHttpRequest()) {
+//            return $this->render('facebook_user/search.html.twig', ['query' => $query]);
+//        }
+
+        $foundUsers = $facebookUserRepository->findBySearchQuery($query, 50);
+
+        $results = [];
+        foreach ($foundUsers as $user) {
+            $results[] = [
+                'id' => $user->getId(),
+                'fullName' => htmlspecialchars($user->getFirstName(), \ENT_COMPAT | \ENT_HTML5) . htmlspecialchars($user->getLastName(), \ENT_COMPAT | \ENT_HTML5),
+                'mobile' => $user->getMobile(),
+                'sex' => $user->getSex(),
+                'work' => htmlspecialchars($user->getWorkCompany(), \ENT_COMPAT | \ENT_HTML5),
+                'url' => $this->generateUrl('facebook_user_show', ['id' => $user->getId()]),
+            ];
+        }
+
+        return $this->render("facebook_user/hresult.html.twig", ['users' => $results]);
+
+        dump($results);
+
+        return $this->json($results);
     }
 }
