@@ -12,7 +12,9 @@ use Psr\Log\LoggerInterface;
 use League\Csv\Reader;
 
 use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ScrapAppCommand extends Command
 {
@@ -26,12 +28,17 @@ class ScrapAppCommand extends Command
 
     /** @var LoggerInterface $logger */
     private $logger;
+    /**
+     * @var HttpClientInterface
+     */
+    private $httpClient;
 
 
-    public function __construct(EntityManagerInterface $em, LoggerInterface $logger)
+    public function __construct(HttpClientInterface $httpClient, EntityManagerInterface $em, LoggerInterface $logger)
     {
         @ini_set("memory_limit", -1);
 
+        $this->httpClient = $httpClient;
         $this->em = $em;
         $this->em
             ->getConnection()
@@ -40,7 +47,6 @@ class ScrapAppCommand extends Command
         $this->logger = $logger;
 
         parent::__construct();
-
     }
 
     protected function configure()
@@ -54,49 +60,62 @@ class ScrapAppCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $browser = new HttpBrowser(HttpClient::create());
-        $browser->request('GET', 'https://github.com');
+        $url = 'http://www.app.gov.al/prokurimet-me-vlere-te-vogel/';
+        $browser = new HttpBrowser($this->httpClient);
+        $crawler = $browser->request('GET', $url);
+        $page = $crawler->filter('.list-group-item.list-group-item-result.list-header-margin .list-group-item-heading');
 
+        foreach ($page as $item){
+            dump('-----START-----');
+            $n = new Crawler($item);
+            $c = $n->children('.row');
+            if($c->count() == 2){
+                $firstRow = $c->eq(0);
+                $secondRow = $c->eq(1);
 
-        try {
-            $this->csvReader = Reader::createFromPath($csvPath, 'r');
-            $this->csvReader->setDelimiter(':');
-            $this->csvReader->setHeaderOffset(0);
-        } catch (\Exception $ex) {
-            $this->logger->error("Error opening csv file", ['error' => $ex]);
-            throw $ex;
-        }
+                if($firstRow){
+                    $firstRow = $firstRow->eq(0);
+                    if($firstRow){
 
-        $headers = $this->csvReader->getHeader(); //returns the CSV header record
-        $this->logger->info('headers', $headers);
-
-
-        $records = $this->csvReader->getRecords(); //returns all the CSV records as an Iterator object
-        $totalRecords = iterator_count($records);
-        $this->logger->info('Total records found:' . $totalRecords);
-        $io->info('Total records found:' . $totalRecords);
-
-        $i = 1;
-        gc_enable();
-
-        foreach ($records as $record) {
-            if ($io->isDebug() or $io->isVerbose()) {
-//                echo $i;
-//                $this->logger->info($i, $record);
+                        dump($firstRow->filter(":not(span)")->text());
+                        dump($firstRow->filter('strong span')->text());
+                        dump($firstRow->filter('.more-info')->text());
+                        dump($firstRow->text());
+                    }
+                }
             }
+            die;
+            $c->each(function (Crawler $node) {
 
-            $faceBookUser = $this->importUser($record);
-            $this->em->persist($faceBookUser);
-            if (++$i % 1000 == 0) {
-                echo $i . PHP_EOL;
-                $this->em->flush();
-                gc_collect_cycles();
-                $this->em->clear();
-            }
-
+            });
+//            foreach ($c as $el)
+//                dump($el->nodeName);
+////                dump($el->textContent);
+//            dump('-----END-----');
         }
+        die;
 
-        $this->em->flush();
+//        foreach ($items as $item){
+//            $c = new Crawler($item->);
+//            $t = $c->children();
+//            foreach ($t as $d){
+//                dump($d->nodeName);
+//            }
+//
+//            die();
+//        }
+
+
+//        gc_enable();
+//
+//
+//            $this->em->persist($faceBookUser);
+//                $this->em->flush();
+//                gc_collect_cycles();
+//                $this->em->clear();
+//
+//
+//        $this->em->flush();
         return Command::SUCCESS;
     }
 
