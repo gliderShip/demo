@@ -65,22 +65,34 @@ class ScrapAppCommand extends Command
         $crawler = $browser->request('GET', $url);
         $page = $crawler->filter('.list-group-item.list-group-item-result.list-header-margin .list-group-item-heading');
 
-        foreach ($page as $item){
+        foreach ($page as $item) {
             dump('-----START-----');
             $n = new Crawler($item);
             $c = $n->children('.row');
-            if($c->count() == 2){
+            if ($c->count() == 2) {
                 $firstRow = $c->eq(0);
                 $secondRow = $c->eq(1);
 
-                if($firstRow){
+                if ($firstRow) {
                     $firstRow = $firstRow->eq(0);
-                    if($firstRow){
-
-                        dump($firstRow->filter(":not(span)")->text());
-                        dump($firstRow->filter('strong span')->text());
-                        dump($firstRow->filter('.more-info')->text());
+                    if ($firstRow) {
                         dump($firstRow->text());
+                        $arr = $firstRow->filterXPath('//text()[not(ancestor::span) ]')
+                            ->filterXPath('//text()[not(ancestor::strong) ]')
+                            ->extract(['_text']);
+
+                        dump(
+                            array_filter($arr, function ($el) {
+                                return strlen(trim(nl2br($el))) > 3;
+                            }
+                            )
+                        );
+
+
+                        dump($firstRow->text());
+//                        dump($firstRow->filter('strong span')->text());
+//                        dump($firstRow->filter('.more-info')->text());
+//                        dump($firstRow->text());
                     }
                 }
             }
@@ -118,8 +130,6 @@ class ScrapAppCommand extends Command
 //        $this->em->flush();
         return Command::SUCCESS;
     }
-
-
 
 
 }
