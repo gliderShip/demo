@@ -14,6 +14,7 @@ use League\Csv\Reader;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ScrapAppCommand extends Command
@@ -63,41 +64,17 @@ class ScrapAppCommand extends Command
         $url = 'http://www.app.gov.al/prokurimet-me-vlere-te-vogel/';
         $browser = new HttpBrowser($this->httpClient);
         $crawler = $browser->request('GET', $url);
-        $page = $crawler->filter('.list-group-item.list-group-item-result.list-header-margin .list-group-item-heading');
+        $tenderList = $crawler->filter('.list-group-item.list-group-item-result.list-header-margin .list-group-item-heading');
 
-        foreach ($page as $item) {
-            dump('-----START-----');
-            $n = new Crawler($item);
-            $c = $n->children('.row');
-            if ($c->count() == 2) {
-                $firstRow = $c->eq(0);
-                $secondRow = $c->eq(1);
+        foreach ($tenderList as $tender) {
 
-                if ($firstRow) {
-                    $firstRow = $firstRow->eq(0);
-                    if ($firstRow) {
-                        dump($firstRow->text());
-                        $arr = $firstRow->filterXPath('//text()[not(ancestor::span) ]')
-                            ->filterXPath('//text()[not(ancestor::strong) ]')
-                            ->extract(['_text']);
-
-                        dump(
-                            array_filter($arr, function ($el) {
-                                return strlen(trim(nl2br($el))) > 3;
-                            }
-                            )
-                        );
-
-
-                        dump($firstRow->text());
-//                        dump($firstRow->filter('strong span')->text());
-//                        dump($firstRow->filter('.more-info')->text());
-//                        dump($firstRow->text());
-                    }
-                }
+            $tenderCrawler = new Crawler($tender);
+            $tenderEntry = $tenderCrawler->children('.row');
+            if ($tenderEntry->count() == 2) {
+                $this->scrapEntry($tenderEntry);
             }
-            die;
-            $c->each(function (Crawler $node) {
+
+            $tenderEntry->each(function (Crawler $node) {
 
             });
 //            foreach ($c as $el)
@@ -129,6 +106,116 @@ class ScrapAppCommand extends Command
 //
 //        $this->em->flush();
         return Command::SUCCESS;
+    }
+
+    private function scrapEntry(Crawler $tenderEntry)
+    {
+        $tender = [
+            'name' => null,
+            'agency' => null,
+            'openDate' => null,
+            'closeDate' => null,
+            'referenceNumber' => null,
+            'hasLot' => null,
+            'canceled' => null,
+            'suspended' => null,
+            'type' => null,
+        ];
+
+        $firstRow = $tenderEntry->eq(0);
+        $secondRow = $tenderEntry->eq(1);
+
+        if ($firstRow) {
+            $firstRow = $firstRow->eq(0);
+            if ($firstRow) {
+
+                $tenderNameLabel = $firstRow->filter('strong')->text();
+                $moreLinkLabel = $firstRow->filter('.more-info')->text();
+
+                $allText = $firstRow->text();
+                $toRemove = [trim($tenderNameLabel), trim($moreLinkLabel)];
+                $cleanedText = trim(str_replace($toRemove, '', $allText));
+                $tender['name'] = $cleanedText;
+            }
+
+            $modal = $this->getModal($firstRow);
+            $type = $this->getType($modal);
+        }
+
+        if ($secondRow) {
+            $tender['agency'] = $this->getTenderAgency($secondRow);
+            $tender['openDate'] = $this->getOpenDate($secondRow);
+            $tender['closeDate'] = $this->getCloseDate($secondRow);
+            $tender['referenceNumber'] = $this->getReferenceNumber($secondRow);
+            $tender['hasLot'] = $this->hasLot($secondRow);
+            $tender['canceled'] = $this->isCanceled($secondRow);
+            $tender['suspended'] = $this->isSuspended($secondRow);
+            $tender['suspended'] = $this->isSuspended($secondRow);
+        }
+
+        dump($tender);
+        die;
+    }
+
+    private function getTenderAgency(Crawler $row): string
+    {
+        return trim($row->filter('span[style="color: #607D8B"]')->text());
+    }
+
+    private function getOpenDate(Crawler $row): \DateTime
+    {
+        $date = trim($row->filter('ul > li:nth-child(3) > span > span')->text());
+        $hour = trim($row->filter('ul > li:nth-child(3) > span > small')->text());
+        return new \DateTime("$date $hour");
+    }
+
+    private function getCloseDate(Crawler $row): \DateTime
+    {
+        $date = trim($row->filter('ul > li:nth-child(5) > span > span')->text());
+        $hour = trim($row->filter('ul > li:nth-child(5) > span > small')->text());
+        return new \DateTime("$date $hour");
+    }
+
+    private function getReferenceNumber(Crawler $row): string
+    {
+        $referenceNumber = trim($row->filter('ul > li:nth-child(7) > span > span')->text());
+        return $referenceNumber;
+    }
+
+    private function hasLot(Crawler $row): bool
+    {
+        $hasLot = trim($row->filter('ul > li:nth-child(9) > span > span > i')->text());
+        dump($hasLot);
+        return strcasecmp(trim($hasLot), 'po') == 0 ? true : false;
+    }
+
+    private function isCanceled(Crawler $row): bool
+    {
+        $hasLot = trim($row->filter('ul > li:nth-child(11) > span > span > i')->text());
+        dump($hasLot);
+        return strcasecmp(trim($hasLot), 'po') == 0;
+    }
+
+    private function isSuspended(Crawler $row): bool
+    {
+        $suspended = trim($row->filter('ul > li:nth-child(13) > span > span > i')->text());
+        dump($suspended);
+        return strcasecmp(trim($suspended), 'po') == 0;
+    }
+
+    private function getModal(Crawler $row): ?Crawler
+    {
+        $modalId = trim($row->filter('div.more-info a')->attr('href'));
+        $modal = $row->filter($modalId);
+        return $modal;
+    }
+
+    private function getType(Crawler $modal): ?string
+    {
+        dump($modal->text());
+        $type = trim($modal->filter('ul > li:nth-child(3) > div > div.col-lg-8.col-md-8.col-sm-12.col-xs-12 > small')->text());
+        dump($type);
+        return $type;
     }
 
 
