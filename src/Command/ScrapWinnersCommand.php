@@ -21,9 +21,9 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class ScrapAppCommand extends Command
+class ScrapWinnersCommand extends Command
 {
-    protected static $defaultName = 'app:scrap-app';
+    protected static $defaultName = 'app:wscrap-app';
     protected static $defaultDescription = 'scrap app';
 
     /**
@@ -76,11 +76,11 @@ class ScrapAppCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $url = 'http://www.app.gov.al/prokurimet-me-vlere-te-vogel/';
+        $url = 'http://www.app.gov.al/njoftimi-i-fituesit/';
         $browser = new HttpBrowser($this->httpClient);
         $crawler = $browser->request('GET', $url);
 
-        for ($p = 1; $p <= 516; ++$p) {
+        for ($p = 1; $p <= 50; ++$p) {
 
             $form = null;
             try {
@@ -116,6 +116,7 @@ class ScrapAppCommand extends Command
                 $this->modalsCrawler = $crawler->filter('.modal');
                 if ($tenderEntry->count() == 2) {
                     $scrapedData = $this->scrapEntry($tenderEntry);
+                    dd($scrapedData);
                     $tenderEntity = new Tender();
 
                     $agencyName = $scrapedData['agency'];
