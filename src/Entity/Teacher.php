@@ -3,16 +3,16 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\CorsoDiStudioRepository;
+use App\Repository\TeacherRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ApiResource()
- * @ORM\Entity(repositoryClass=CorsoDiStudioRepository::class)
+ * @ORM\Entity(repositoryClass=TeacherRepository::class)
  */
-class CorsoDiStudio
+class Teacher
 {
     /**
      * @ORM\Id
@@ -32,14 +32,19 @@ class CorsoDiStudio
     private $code;
 
     /**
-     * @ORM\OneToMany(targetEntity=Corso::class, mappedBy="corsoDiStudio", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Corso::class, mappedBy="titolare")
      */
     private $corsi;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ModuloInsegnamento::class, mappedBy="teacher")
+     */
+    private $moduliInsegnamento;
 
     public function __construct()
     {
         $this->corsi = new ArrayCollection();
+        $this->moduliInsegnamento = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -83,7 +88,7 @@ class CorsoDiStudio
     {
         if (!$this->corsi->contains($corsi)) {
             $this->corsi[] = $corsi;
-            $corsi->setCorsoDiStudio($this);
+            $corsi->setTeacher($this);
         }
 
         return $this;
@@ -93,8 +98,8 @@ class CorsoDiStudio
     {
         if ($this->corsi->removeElement($corsi)) {
             // set the owning side to null (unless already changed)
-            if ($corsi->getCorsoDiStudio() === $this) {
-                $corsi->setCorsoDiStudio(null);
+            if ($corsi->getTeacher() === $this) {
+                $corsi->setTeacher(null);
             }
         }
 
@@ -102,49 +107,32 @@ class CorsoDiStudio
     }
 
     /**
-     * @return int
+     * @return Collection|ModuloInsegnamento[]
      */
-    public function getMandatoryCoursesCredits(): int
+    public function getModuliInsegnamento(): Collection
     {
-        $credits = 0;
-        foreach ($this->getCorsi()as $corso) {
-            if($corso->getMandatory()){
-                $credits += $corso->getCredits();
+        return $this->moduliInsegnamento;
+    }
+
+    public function addModuliInsegnamento(ModuloInsegnamento $moduliInsegnamento): self
+    {
+        if (!$this->moduliInsegnamento->contains($moduliInsegnamento)) {
+            $this->moduliInsegnamento[] = $moduliInsegnamento;
+            $moduliInsegnamento->setTeacher($this);
+        }
+
+        return $this;
+    }
+
+    public function removeModuliInsegnamento(ModuloInsegnamento $moduliInsegnamento): self
+    {
+        if ($this->moduliInsegnamento->removeElement($moduliInsegnamento)) {
+            // set the owning side to null (unless already changed)
+            if ($moduliInsegnamento->getTeacher() === $this) {
+                $moduliInsegnamento->setTeacher(null);
             }
-
         }
 
-        return $credits;
+        return $this;
     }
-
-    /**
-     * @return int
-     */
-    public function getOptionalCoursesCredits(): int
-    {
-        $credits = 0;
-        foreach ($this->getCorsi()as $corso) {
-            if(!$corso->getMandatory()){
-                $credits += $corso->getCredits();
-            }
-
-        }
-
-        return $credits;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalCoursesCredits(): int
-    {
-        $credits = 0;
-        foreach ($this->getCorsi()as $corso) {
-                $credits += $corso->getCredits();
-        }
-
-        return $credits;
-    }
-
-
 }

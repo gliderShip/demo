@@ -22,29 +22,29 @@ class CorsoRepository extends ServiceEntityRepository
     // /**
     //  * @return Corso[] Returns an array of Corso objects
     //  */
-    /*
     public function findByExampleField($value)
     {
-        return $this->createQueryBuilder('c')
+        return
+            $this->createQueryBuilder('c')
             ->andWhere('c.exampleField = :val')
             ->setParameter('val', $value)
             ->orderBy('c.id', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
-            ->getResult()
+            ->getArrayResult()
         ;
     }
-    */
 
-    /*
+
+
     public function findOneBySomeField($value): ?Corso
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
+            ->andWhere('c.exampleField = :val', $value)
             ->setParameter('val', $value)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
+
 }

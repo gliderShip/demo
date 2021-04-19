@@ -25,9 +25,22 @@ class ModuloCorso
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=15)
+     * @ORM\Column(type="smallint")
      */
-    private $code;
+    private $credits;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Corso::class, inversedBy="moduli")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $corso;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=ModuloInsegnamento::class, inversedBy="moduliCorsi", fetch="EAGER")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $moduloInsegnamento;
+
 
     public function getId(): ?int
     {
@@ -46,15 +59,45 @@ class ModuloCorso
         return $this;
     }
 
-    public function getCode(): ?string
+    public function getCredits(): ?int
     {
-        return $this->code;
+        return $this->credits;
     }
 
-    public function setCode(string $code): self
+    public function setCredits(int $credits): self
     {
-        $this->code = $code;
+        $this->credits = $credits;
 
         return $this;
     }
+
+    public function getCorso(): ?Corso
+    {
+        return $this->corso;
+    }
+
+    public function setCorso(?Corso $corso): self
+    {
+        $this->corso = $corso;
+
+        return $this;
+    }
+
+    public function getModuloInsegnamento(): ?ModuloInsegnamento
+    {
+        return $this->moduloInsegnamento;
+    }
+
+    public function setModuloInsegnamento(?ModuloInsegnamento $moduloInsegnamento): self
+    {
+        $this->moduloInsegnamento = $moduloInsegnamento;
+
+        return $this;
+    }
+
+    public function getTeacher(): ?Teacher
+    {
+        return $this->getModuloInsegnamento()->getTeacher();
+    }
+    
 }

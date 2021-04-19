@@ -32,13 +32,36 @@ class Corso
     private $code;
 
     /**
-     * @ORM\ManyToMany(targetEntity=CorsoDiStudio::class, mappedBy="corsi")
+     * @ORM\ManyToOne(targetEntity=Insegnamento::class, inversedBy="corso")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $corsiDiStudi;
+    private $insegnamento;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ModuloCorso::class, mappedBy="corso", fetch="EAGER")
+     */
+    private $moduli;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Teacher::class, inversedBy="corsi")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $titolare;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=CorsoDiStudio::class, inversedBy="corsi")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $corsoDiStudio;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $mandatory;
 
     public function __construct()
     {
-        $this->corsiDiStudi = new ArrayCollection();
+        $this->moduli = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -70,30 +93,103 @@ class Corso
         return $this;
     }
 
+    public function getInsegnamento(): ?Insegnamento
+    {
+        return $this->insegnamento;
+    }
+
+    public function setInsegnamento(?Insegnamento $insegnamento): self
+    {
+        $this->insegnamento = $insegnamento;
+
+        return $this;
+    }
+
     /**
-     * @return Collection|CorsoDiStudio[]
+     * @return Collection|ModuloCorso[]
      */
-    public function getCorsiDiStudi(): Collection
+    public function getModuli(): Collection
     {
-        return $this->corsiDiStudi;
+        return $this->moduli;
     }
 
-    public function addCorsiDiStudi(CorsoDiStudio $corsiDiStudi): self
+    public function addModuli(ModuloCorso $moduli): self
     {
-        if (!$this->corsiDiStudi->contains($corsiDiStudi)) {
-            $this->corsiDiStudi[] = $corsiDiStudi;
-            $corsiDiStudi->addCorsi($this);
+        if (!$this->moduli->contains($moduli)) {
+            $this->moduli[] = $moduli;
+            $moduli->setCorso($this);
         }
 
         return $this;
     }
 
-    public function removeCorsiDiStudi(CorsoDiStudio $corsiDiStudi): self
+    public function removeModuli(ModuloCorso $moduli): self
     {
-        if ($this->corsiDiStudi->removeElement($corsiDiStudi)) {
-            $corsiDiStudi->removeCorsi($this);
+        if ($this->moduli->removeElement($moduli)) {
+            // set the owning side to null (unless already changed)
+            if ($moduli->getCorso() === $this) {
+                $moduli->setCorso(null);
+            }
         }
 
         return $this;
     }
+
+    public function getCredits(): ?int
+    {
+        $credits = 0;
+        foreach ($this->getModuli() as $modulo) {
+            $credits += $modulo->getCredits();
+        }
+
+        return $credits;
+    }
+
+    public function setCredits(int $credits): self
+    {
+        $this->credits = $credits;
+
+        return $this;
+    }
+
+    public function getTitolare(): ?Teacher
+    {
+        return $this->titolare;
+    }
+
+    /**
+     * @param Teacher|null $titolare
+     * @return $this
+     */
+    public function setTitolare(?Teacher $titolare): self
+    {
+        $this->titolare = $titolare;
+
+        return $this;
+    }
+
+    public function getCorsoDiStudio(): ?CorsoDiStudio
+    {
+        return $this->corsoDiStudio;
+    }
+
+    public function setCorsoDiStudio(?CorsoDiStudio $corsoDiStudio): self
+    {
+        $this->corsoDiStudio = $corsoDiStudio;
+
+        return $this;
+    }
+
+    public function getMandatory(): ?bool
+    {
+        return $this->mandatory;
+    }
+
+    public function setMandatory(bool $mandatory): self
+    {
+        $this->mandatory = $mandatory;
+
+        return $this;
+    }
+
 }

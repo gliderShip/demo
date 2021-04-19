@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\Tender;
+use App\Entity\Teacher;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Tender|null find($id, $lockMode = null, $lockVersion = null)
- * @method Tender|null findOneBy(array $criteria, array $orderBy = null)
- * @method Tender[]    findAll()
- * @method Tender[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Teacher|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Teacher|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Teacher[]    findAll()
+ * @method Teacher[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TenderRepository extends ServiceEntityRepository
+class TeacherRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Tender::class);
+        parent::__construct($registry, Teacher::class);
     }
 
     // /**
-    //  * @return Tender[] Returns an array of Tender objects
+    //  * @return Teacher[] Returns an array of Teacher objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class TenderRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Tender
+    public function findOneBySomeField($value): ?Teacher
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.exampleField = :val')
