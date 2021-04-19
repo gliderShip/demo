@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 class CorsoDiStudio
 {
     /**
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -35,6 +36,12 @@ class CorsoDiStudio
      * @ORM\OneToMany(targetEntity=Corso::class, mappedBy="corsoDiStudio", orphanRemoval=true)
      */
     private $corsi;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=AnnoAccademico::class, inversedBy="corsiDiStudio")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $annoAccademico;
 
 
     public function __construct()
@@ -144,6 +151,18 @@ class CorsoDiStudio
         }
 
         return $credits;
+    }
+
+    public function getAnnoAccademico(): ?AnnoAccademico
+    {
+        return $this->annoAccademico;
+    }
+
+    public function setAnnoAccademico(?AnnoAccademico $annoAccademico): self
+    {
+        $this->annoAccademico = $annoAccademico;
+
+        return $this;
     }
 
 

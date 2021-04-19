@@ -41,6 +41,22 @@ class Insegnamento
      */
     private $moduli;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Semestre::class, inversedBy="insegnamento")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $semestre;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $startsAt;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $endsAt;
+
     public function __construct()
     {
         $this->corso = new ArrayCollection();
@@ -132,6 +148,42 @@ class Insegnamento
                 $moduli->setInsegnamento(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSemestre(): ?Semestre
+    {
+        return $this->semestre;
+    }
+
+    public function setSemestre(?Semestre $semestre): self
+    {
+        $this->semestre = $semestre;
+
+        return $this;
+    }
+
+    public function getStartsAt(): ?\DateTimeInterface
+    {
+        return $this->startsAt;
+    }
+
+    public function setStartsAt(\DateTimeInterface $startsAt): self
+    {
+        $this->startsAt = $startsAt;
+
+        return $this;
+    }
+
+    public function getEndsAt(): ?\DateTimeInterface
+    {
+        return $this->endsAt;
+    }
+
+    public function setEndsAt(\DateTimeInterface $endsAt): self
+    {
+        $this->endsAt = $endsAt;
 
         return $this;
     }
